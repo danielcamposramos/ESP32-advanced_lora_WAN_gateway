@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "lora.h"
+#include "nvs_flash.h"
+#include "esp_log.h"
+#include "string.h"
+#include "nmea_parser.h"
+
+#define TIME_ZONE (-3)   // Time zone, to get local time (-3 = Brazil/Nova Scotia)
+#define YEAR_BASE (2000) //date in GPS starts from 2000 and adds up on the code
+
+//static const char *TAG = "\nData e Hora GPS";
+static char GPS[152] = "";
+
+static void gps_event_handler(void *event_handler_arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
+{
+    gps_t *gps = NULL;
+    switch (event_id) {
+    case GPS_UPDATE:
+        gps = (gps_t *)event_data;
+        /* print information parsed from GPS statements */
+        /*
+        ESP_LOGI(TAG, 
+                 "\n%d/%d/%d\n%d:%d:%d\r\n"
+                 "Dados:\r\n"
+                 "Latitude   = %.05f °N\r\n"
+                 "Longitude  = %.05f °E\r\n"
+                 "Altitude   = %.02f m\r\n"
+                 "Velocidade = %f m/s",
+                 gps->date.day, gps->date.month, gps->date.year + YEAR_BASE,
+                 gps->tim.hour + TIME_ZONE, gps->tim.minute, gps->tim.second,
+                 gps->latitude, gps->longitude, gps->altitude, gps->speed);
+        */
+        /* set information parsed from GPS statements to variable GPS */
+        sprintf(GPS, "Data e Hora GPS: %d/%d/%d %d:%d:%d Dados: "
+                 "Latitude = %.05f &#186N, "
+                 "Longitude = %.05f &#186E, "
+                 "Altitude = %.02f m, "
+                 "Velocidade = %f m/s.\n",
+                 gps->date.day, gps->date.month, gps->date.year + YEAR_BASE,
+                 gps->tim.hour + TIME_ZONE, gps->tim.minute, gps->tim.second,
+                 gps->latitude, gps->longitude, gps->altitude, gps->speed);
+        break;
+    case GPS_UNKNOWN:
+        /* print unknown statements */
+        //ESP_LOGW(TAG, "Unknown statement:%s", (char *)event_data);
+        break;
+    default:
+        break;
+    }
+}
+
+void task_tx(void *p)
+{
+   for(;;) {
+      vTaskDelay(pdMS_TO_TICKS(5000));
+      printf(GPS, sizeof(GPS));
+      lora_send_packet((uint8_t *) GPS, sizeof(GPS));
+      printf("dados do GPS enviados via LORA...\n");
+   }
+}
+
+void app_main()
+{
+    nmea_parser_config_t config = NMEA_PARSER_CONFIG_DEFAULT();
+    nmea_parser_handle_t nmea_hdl = nmea_parser_init(&config);
+    nmea_parser_add_handler(nmea_hdl, gps_event_handler, NULL);
+    lora_init();
+    lora_set_frequency(915e6);
+    lora_enable_crc();
+    xTaskCreate(&task_tx, "task_tx", 3072, NULL, 1, NULL);
+} 
