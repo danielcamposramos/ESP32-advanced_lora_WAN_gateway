@@ -1,0 +1,35 @@
+{
+  "title": "ESP32-advanced_lora_WAN_gateway: a LoRa gateway with a GPS edge device and MQTT",
+  "description": "Two ESP32 programs: an edge device that reads its position from a GPS receiver (NMEA) and sends it over LoRa, and a gateway that receives LoRa messages and forwards them to an MQTT broker over Wi-Fi. The NMEA parser is Espressif's ESP-IDF example (Apache-2.0). Written in C with ESP-IDF and FreeRTOS, in VS Code with PlatformIO, at the Universidade de Brasília with Prof. Jones Yudi Mori Alves da Silva.",
+  "creators": [
+    {
+      "name": "Ramos, Daniel Campos",
+      "orcid": "0009-0001-4546-8673",
+      "affiliation": "Universidade de Brasília"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "Mori Alves da Silva, Jones Yudi",
+      "orcid": "0000-0001-6707-853X",
+      "affiliation": "Universidade de Brasília",
+      "type": "Supervisor"
+    }
+  ],
+  "license": "gpl-3.0-or-later",
+  "upload_type": "software",
+  "access_right": "open",
+  "keywords": [
+    "ESP32",
+    "ESP-IDF",
+    "FreeRTOS",
+    "embedded systems",
+    "C",
+    "LoRa",
+    "MQTT",
+    "GPS",
+    "NMEA",
+    "IoT",
+    "gateway"
+  ]
+}
