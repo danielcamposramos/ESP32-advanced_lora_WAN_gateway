@@ -9,6 +9,7 @@ authors:
     orcid: "https://orcid.org/0009-0001-4546-8673"
     affiliation: "Universidade de Brasília"
 license: GPL-3.0-or-later
+doi: "10.5281/zenodo.23309010"
 repository-code: "https://github.com/danielcamposramos/ESP32-advanced_lora_WAN_gateway"
 keywords:
   - "ESP32"
